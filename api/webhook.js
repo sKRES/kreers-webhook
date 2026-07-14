@@ -13,8 +13,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Tilda отправляет данные в form-data, а не JSON
-    // Vercel автоматически парсит оба формата
+    // Tilda отправляет данные в form-data
     const body = req.body || {};
     
     // Ищем текст вопроса в разных возможных полях (Tilda использует разные имена)
@@ -28,21 +27,12 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Спасибо!' });
     }
 
-    // Более мягкая валидация
-    if (!question || question.trim().length < 3) {
-      return res.status(400).json({ error: 'Вопрос должен быть минимум 3 символа' });
-    }
-
-    if (question.length > 2000) {
-      return res.status(400).json({ error: 'Вопрос слишком длинный (максимум 2000 символов)' });
-    }
-
     // Определяем источник
     const source = body.source || 'tilda_form';
 
     // Формирование сообщения
-    const message = ` *Новый вопрос (${source})*\n\n${question}\n\n${
-      contact ? `📧 Контакт: ${contact}` : ' Полностью анонимно'
+    const message = `🔔 *Новый вопрос (${source})*\n\n${question}\n\n${
+      contact ? `📧 Контакт: ${contact}` : '🔒 Полностью анонимно'
     }`;
 
     // Отправка в Telegram
